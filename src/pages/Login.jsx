@@ -80,13 +80,6 @@ export default function Login() {
             <Button type="submit" loading={loading} className="w-full py-3">Sign In</Button>
           </form>
 
-          {/* Hint */}
-          <div className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-xs text-blue-600 dark:text-blue-400">
-            <p className="font-semibold mb-1">Test Credentials:</p>
-            <p>Admin: admin@foodhub.com / Admin@123</p>
-            <p>User: jane@example.com / Jane@123</p>
-          </div>
-
           <p className="text-center text-sm text-gray-500 dark:text-dark-muted mt-6">
             Don&apos;t have an account?{" "}
             <Link to="/register" className="text-primary-500 hover:text-primary-700 font-semibold transition-colors">Sign Up</Link>
