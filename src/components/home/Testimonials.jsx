@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { FaQuoteLeft } from "react-icons/fa"
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
 import { TESTIMONIALS } from "@/data/testimonials.js"
 import StarRating from "@/components/common/StarRating.jsx"
+import { gsap } from "@/utils/gsap.js"
 
 export default function Testimonials() {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(1)
+  const sectionRef = useRef(null)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -15,6 +17,20 @@ export default function Testimonials() {
       setCurrent(c => (c + 1) % TESTIMONIALS.length)
     }, 5000)
     return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".testimonials-heading", {
+        opacity: 0, y: 30, duration: 0.7, ease: "power3.out",
+        scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true },
+      })
+      gsap.from(".testimonials-carousel", {
+        opacity: 0, y: 40, duration: 0.8, ease: "power3.out", delay: 0.2,
+        scrollTrigger: { trigger: sectionRef.current, start: "top 80%", once: true },
+      })
+    }, sectionRef)
+    return () => ctx.revert()
   }, [])
 
   const go = (dir) => {
@@ -25,14 +41,14 @@ export default function Testimonials() {
   const t = TESTIMONIALS[current]
 
   return (
-    <section className="py-20">
+    <section ref={sectionRef} className="py-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="testimonials-heading text-center mb-12">
           <p className="text-primary-500 font-semibold text-sm uppercase tracking-wider mb-2">Happy Customers</p>
           <h2 className="section-title">What Our Customers Say</h2>
         </div>
 
-        <div className="relative">
+        <div className="testimonials-carousel relative">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={t.id}

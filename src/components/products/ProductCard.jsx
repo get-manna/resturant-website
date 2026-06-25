@@ -5,11 +5,16 @@ import { FiShoppingCart, FiEye } from "react-icons/fi"
 import { useCart } from "@/context/CartContext.jsx"
 import { formatPrice } from "@/utils/formatCurrency.js"
 import StarRating from "@/components/common/StarRating.jsx"
+import { getCategories } from "@/data/categories.js"
 import toast from "react-hot-toast"
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart()
   const [adding, setAdding] = useState(false)
+
+  const categories = getCategories()
+  const catObj = categories.find(c => c.id === product.category || c.slug === product.category)
+  const categoryLabel = catObj?.name ?? product.category
 
   const handleAddToCart = async (e) => {
     e.preventDefault()
@@ -57,7 +62,7 @@ export default function ProductCard({ product }) {
       </Link>
 
       <div className="p-4">
-        <p className="text-xs text-primary-500 font-medium uppercase tracking-wider mb-1 capitalize">{product.category}</p>
+        <p className="text-xs text-primary-500 font-medium uppercase tracking-wider mb-1 capitalize">{categoryLabel}</p>
         <Link to={`/products/${product.slug}`}>
           <h3 className="font-display font-semibold text-gray-900 dark:text-dark-text hover:text-primary-500 transition-colors line-clamp-2 mb-2">
             {product.name}

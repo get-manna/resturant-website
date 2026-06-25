@@ -365,3 +365,8 @@ export const PRODUCTS = [
     createdAt: "2024-02-04T10:00:00Z",
   },
 ]
+
+export function getProducts() {
+  try { return JSON.parse(localStorage.getItem("foodhub_products") || "null") || PRODUCTS }
+  catch { return PRODUCTS }
+}

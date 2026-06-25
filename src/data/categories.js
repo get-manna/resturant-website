@@ -8,3 +8,8 @@ export const CATEGORIES = [
   { id: "desserts",   name: "Desserts",   slug: "desserts",   icon: "🍰", image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=80",     productCount: 5, isActive: true },
   { id: "sandwiches", name: "Sandwiches", slug: "sandwiches", icon: "🥪", image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&q=80",  productCount: 5, isActive: true },
 ]
+
+export function getCategories() {
+  try { return JSON.parse(localStorage.getItem("foodhub_categories") || "null") || CATEGORIES }
+  catch { return CATEGORIES }
+}

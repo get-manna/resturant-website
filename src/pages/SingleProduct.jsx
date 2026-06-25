@@ -2,7 +2,8 @@ import { useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { FiShoppingCart, FiMinus, FiPlus, FiArrowLeft, FiZap } from "react-icons/fi"
-import { PRODUCTS } from "@/data/products.js"
+import { getProducts } from "@/data/products.js"
+import { getCategories } from "@/data/categories.js"
 import { useCart } from "@/context/CartContext.jsx"
 import { useAuth } from "@/context/AuthContext.jsx"
 import { formatPrice } from "@/utils/formatCurrency.js"
@@ -22,7 +23,12 @@ const INITIAL_REVIEWS = [
 export default function SingleProduct() {
   const { slug } = useParams()
   const navigate = useNavigate()
-  const product = PRODUCTS.find(p => p.slug === slug)
+  const allProducts = getProducts()
+  const product = allProducts.find(p => p.slug === slug)
+  const allCategories = getCategories()
+  const catObj = product ? allCategories.find(c => c.id === product.category || c.slug === product.category) : null
+  const categoryName = catObj?.name ?? product?.category ?? ""
+  const categorySlug = catObj?.slug ?? product?.category ?? ""
   const { addItem, toggleCart } = useCart()
   const { isAuthenticated, user } = useAuth()
   const [selectedImage, setSelectedImage] = useState(0)
@@ -45,7 +51,7 @@ export default function SingleProduct() {
 
   const finalPrice = product.discountPrice ?? product.price
   const productReviews = reviews.filter(r => r.productId === product.id)
-  const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
+  const related = allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
 
   const handleAddToCart = () => {
     addItem(product, quantity)
@@ -84,7 +90,7 @@ export default function SingleProduct() {
           <span>/</span>
           <Link to="/products" className="hover:text-primary-500 transition-colors">Menu</Link>
           <span>/</span>
-          <Link to={`/products?category=${product.category}`} className="hover:text-primary-500 capitalize transition-colors">{product.category}</Link>
+          <Link to={`/products?category=${categorySlug}`} className="hover:text-primary-500 capitalize transition-colors">{categoryName}</Link>
           <span>/</span>
           <span className="text-gray-800 dark:text-dark-text truncate">{product.name}</span>
         </nav>
@@ -110,7 +116,7 @@ export default function SingleProduct() {
 
           {/* Details */}
           <div>
-            <p className="text-primary-500 font-medium capitalize text-sm mb-2">{product.category}</p>
+            <p className="text-primary-500 font-medium capitalize text-sm mb-2">{categoryName}</p>
             <h1 className="text-3xl font-display font-extrabold text-gray-900 dark:text-dark-text mb-4">{product.name}</h1>
 
             <div className="flex items-center gap-3 mb-5">

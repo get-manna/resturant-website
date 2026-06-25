@@ -1,13 +1,31 @@
+import { useEffect, useRef } from "react"
 import { Link } from "react-router-dom"
 import { FiInstagram, FiTwitter, FiFacebook, FiYoutube, FiMapPin, FiPhone, FiMail } from "react-icons/fi"
+import { gsap, ScrollTrigger } from "@/utils/gsap.js"
 
 export default function Footer() {
+  const footerRef = useRef(null)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".footer-col", {
+        opacity: 0, y: 40, stagger: 0.12, duration: 0.7, ease: "power3.out",
+        scrollTrigger: { trigger: footerRef.current, start: "top 90%", once: true },
+      })
+      gsap.from(".footer-bottom", {
+        opacity: 0, y: 20, duration: 0.6, ease: "power2.out",
+        scrollTrigger: { trigger: ".footer-bottom", start: "top 95%", once: true },
+      })
+    }, footerRef)
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <footer className="bg-gray-900 dark:bg-dark-surface text-gray-400">
+    <footer ref={footerRef} className="bg-gray-900 dark:bg-dark-surface text-gray-400">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
-          <div>
+          <div className="footer-col">
             <Link to="/" className="flex items-center gap-2 font-display font-bold text-2xl text-white mb-4">
               <span>🍔</span> FoodHub
             </Link>
@@ -24,7 +42,7 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="footer-col">
             <h4 className="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Quick Links</h4>
             <ul className="space-y-2.5 text-sm">
               {[["Home", "/"], ["Menu", "/products"], ["About", "/about"], ["Services", "/services"]].map(([label, to]) => (
@@ -36,7 +54,7 @@ export default function Footer() {
           </div>
 
           {/* Account */}
-          <div>
+          <div className="footer-col">
             <h4 className="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Account</h4>
             <ul className="space-y-2.5 text-sm">
               {[["Login", "/login"], ["Register", "/register"], ["My Orders", "/dashboard/orders"], ["Dashboard", "/dashboard"]].map(([label, to]) => (
@@ -48,7 +66,7 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="footer-col">
             <h4 className="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Contact</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
@@ -67,7 +85,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+        <div className="footer-bottom border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
           <p>© {new Date().getFullYear()} FoodHub. All rights reserved.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-primary-400 transition-colors">Privacy Policy</a>

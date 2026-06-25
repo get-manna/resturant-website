@@ -2,8 +2,8 @@ import { useState, useMemo } from "react"
 import { useSearchParams } from "react-router-dom"
 import { motion } from "framer-motion"
 import { FiFilter, FiX } from "react-icons/fi"
-import { PRODUCTS } from "@/data/products.js"
-import { CATEGORIES } from "@/data/categories.js"
+import { getProducts } from "@/data/products.js"
+import { getCategories } from "@/data/categories.js"
 import ProductCard from "@/components/products/ProductCard.jsx"
 import SearchBar from "@/components/common/SearchBar.jsx"
 import Pagination from "@/components/common/Pagination.jsx"
@@ -22,6 +22,20 @@ export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
+  // Re-read from localStorage whenever URL params change so fresh admin data is always used
+  const allCategories = useMemo(() => getCategories().filter(c => c.isActive !== false), [searchParams])
+  const allProducts   = useMemo(() => getProducts().filter(p => p.isAvailable !== false),  [searchParams])
+
+  // Compute live product count per category
+  const countForCategory = useMemo(() => {
+    const map = {}
+    allProducts.forEach(p => {
+      const cats = Array.isArray(p.categories) ? p.categories : [p.category]
+      cats.forEach(c => { map[c] = (map[c] || 0) + 1 })
+    })
+    return map
+  }, [allProducts])
+
   const search   = searchParams.get("search")   || ""
   const category = searchParams.get("category") || ""
   const minPrice = Number(searchParams.get("minPrice") || 0)
@@ -36,9 +50,32 @@ export default function Products() {
   }
 
   const filtered = useMemo(() => {
-    let list = [...PRODUCTS]
-    if (search)   list = list.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase()))
-    if (category) list = list.filter(p => p.category === category)
+    let list = [...allProducts]
+
+    if (search) {
+      const q = search.toLowerCase()
+      list = list.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q) ||
+        (Array.isArray(p.categories) && p.categories.some(c => c.includes(q)))
+      )
+    }
+
+    if (category) {
+      // category param is a slug; products may store category by UUID id — resolve both
+      const catObj = allCategories.find(c => c.slug === category)
+      const catId  = catObj?.id
+      list = list.filter(p => {
+        const pCats = Array.isArray(p.categories) ? p.categories : [p.category]
+        return (
+          pCats.includes(category) ||
+          (catId && pCats.includes(catId)) ||
+          p.category === category ||
+          (catId && p.category === catId)
+        )
+      })
+    }
+
     const min = minPrice || 0
     const max = maxPrice || 999
     list = list.filter(p => (p.discountPrice ?? p.price) >= min && (p.discountPrice ?? p.price) <= max)
@@ -48,12 +85,11 @@ export default function Products() {
     if (sort === "rating-desc") list.sort((a, b) => b.rating - a.rating)
     if (sort === "newest")      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     return list
-  }, [search, category, minPrice, maxPrice, sort])
+  }, [search, category, minPrice, maxPrice, sort, allProducts, allCategories])
 
   const page = Number(searchParams.get("page") || 1)
   const { currentItems, currentPage, totalPages, goToPage } = usePagination(filtered, ITEMS_PER_PAGE)
 
-  // Sync page
   useMemo(() => {
     if (page !== currentPage) goToPage(page)
   }, [page])
@@ -76,11 +112,11 @@ export default function Products() {
             <input type="radio" name="cat" checked={category === ""} onChange={() => setParam("category", "")} className="accent-primary-500" />
             <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-primary-500 transition-colors">All Categories</span>
           </label>
-          {CATEGORIES.map(cat => (
+          {allCategories.map(cat => (
             <label key={cat.id} className="flex items-center gap-2 cursor-pointer group">
               <input type="radio" name="cat" checked={category === cat.slug} onChange={() => setParam("category", cat.slug)} className="accent-primary-500" />
               <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-primary-500 transition-colors">
-                {cat.icon} {cat.name} ({cat.productCount})
+                {cat.icon} {cat.name} ({countForCategory[cat.id] || 0})
               </span>
             </label>
           ))}
@@ -113,7 +149,7 @@ export default function Products() {
       <section className="py-12 bg-gradient-to-br from-primary-50 to-white dark:from-dark-surface dark:to-dark-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="section-title mb-2">Our Menu</h1>
-          <p className="text-gray-500 dark:text-dark-muted">Discover {PRODUCTS.length}+ delicious dishes</p>
+          <p className="text-gray-500 dark:text-dark-muted">Discover {allProducts.length}+ delicious dishes</p>
         </div>
       </section>
 
@@ -121,10 +157,7 @@ export default function Products() {
         {/* Top bar */}
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <SearchBar value={search} onChange={v => setParam("search", v)} placeholder="Search dishes…" className="flex-1 min-w-[200px] max-w-sm" />
-          <select
-            value={sort} onChange={e => setParam("sort", e.target.value)}
-            className="input-field w-auto py-2.5 pr-8 cursor-pointer"
-          >
+          <select value={sort} onChange={e => setParam("sort", e.target.value)} className="input-field w-auto py-2.5 pr-8 cursor-pointer">
             {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
           <button onClick={() => setMobileFiltersOpen(true)} className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-dark-border text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-primary-500 hover:text-primary-500 transition-colors">

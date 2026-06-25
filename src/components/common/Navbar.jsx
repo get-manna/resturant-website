@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Link, NavLink, useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { FiShoppingCart, FiSun, FiMoon, FiMenu, FiX, FiUser, FiLogOut, FiPackage } from "react-icons/fi"
@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext.jsx"
 import { useCart } from "@/context/CartContext.jsx"
 import { useTheme } from "@/context/ThemeContext.jsx"
 import CartDrawer from "@/components/cart/CartDrawer.jsx"
+import { gsap } from "@/utils/gsap.js"
 
 const NAV_LINKS = [
   { label: "Home",     to: "/" },
@@ -22,11 +23,16 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userDropdown, setUserDropdown] = useState(false)
   const navigate = useNavigate()
+  const navRef = useRef(null)
 
   useEffect(() => {
     const handler = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handler)
     return () => window.removeEventListener("scroll", handler)
+  }, [])
+
+  useEffect(() => {
+    gsap.from(navRef.current, { y: -70, opacity: 0, duration: 0.7, ease: "power3.out", clearProps: "all" })
   }, [])
 
   const handleLogout = () => {
@@ -37,7 +43,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
+      <header ref={navRef} className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
         isScrolled ? "bg-white/95 dark:bg-dark-bg/95 backdrop-blur-md shadow-md" : "bg-white dark:bg-dark-bg"
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
