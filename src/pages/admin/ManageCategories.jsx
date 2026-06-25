@@ -73,7 +73,9 @@ export default function ManageCategories() {
     saveCategories(updated)
   }
 
-  const inputCls = "w-full px-4 py-2.5 bg-gray-700 border border-dark-border rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+  const inputCls = "w-full px-4 py-2.5 bg-[#F8FAFC] dark:bg-gray-700 border border-[#E2E8F0] dark:border-dark-border rounded-xl text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-400 transition-colors"
+  const labelCls = "text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5 block"
+  const hintCls  = "text-xs text-gray-400 dark:text-gray-500 mt-1"
 
   return (
     <div className="space-y-6">
@@ -148,23 +150,23 @@ export default function ManageCategories() {
         title={editing ? "Edit Category" : "Create Category"} size="sm">
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-gray-400 mb-1.5 block">Category Name *</label>
+            <label className={labelCls}>Category Name *</label>
             <input value={form.name} onChange={e => handleNameChange(e.target.value)}
               placeholder="e.g. Burgers" className={inputCls} />
           </div>
           <div>
-            <label className="text-sm text-gray-400 mb-1.5 block">Slug / URL</label>
+            <label className={labelCls}>Slug / URL</label>
             <input value={form.slug} onChange={e => set("slug", e.target.value)}
               placeholder="e.g. burgers" className={`${inputCls} font-mono text-sm`} />
-            <p className="text-xs text-gray-500 mt-1">Auto-generated from name. Lowercase letters, numbers, and hyphens only.</p>
+            <p className={hintCls}>Auto-generated from name. Lowercase letters, numbers, and hyphens only.</p>
           </div>
           <div>
-            <label className="text-sm text-gray-400 mb-1.5 block">Icon (Emoji)</label>
+            <label className={labelCls}>Icon (Emoji)</label>
             <input value={form.icon} onChange={e => set("icon", e.target.value)}
               placeholder="🍔" className={inputCls} />
           </div>
           <div>
-            <label className="text-sm text-gray-400 mb-1.5 block">Image URL (Optional)</label>
+            <label className={labelCls}>Image URL (Optional)</label>
             <input value={form.image} onChange={e => set("image", e.target.value)}
               placeholder="https://..." className={inputCls} />
             {form.image && (
@@ -174,7 +176,7 @@ export default function ManageCategories() {
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.isActive} onChange={e => set("isActive", e.target.checked)}
               className="accent-primary-500 h-4 w-4" />
-            <span className="text-sm text-gray-300">Active</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
           </label>
           <div className="flex gap-3 pt-2">
             <Button variant="secondary" className="flex-1" onClick={() => setModalOpen(false)}>Cancel</Button>
