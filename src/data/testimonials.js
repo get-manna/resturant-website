@@ -1,0 +1,42 @@
+export const TESTIMONIALS = [
+  {
+    id: "t1",
+    name: "Sarah Johnson",
+    role: "Food Blogger",
+    avatar: "https://i.pravatar.cc/80?img=47",
+    rating: 5,
+    comment: "FoodHub has completely changed how I order food. The variety is incredible and delivery is always on time. The sushi platter was absolutely fresh — restaurant quality at home!",
+  },
+  {
+    id: "t2",
+    name: "Marcus Rivera",
+    role: "Office Manager",
+    avatar: "https://i.pravatar.cc/80?img=12",
+    rating: 5,
+    comment: "We use FoodHub for our team lunches every week. The order tracking is transparent and the food always arrives hot. The BBQ Bacon Burger is a crowd favorite!",
+  },
+  {
+    id: "t3",
+    name: "Emily Chen",
+    role: "Graphic Designer",
+    avatar: "https://i.pravatar.cc/80?img=32",
+    rating: 5,
+    comment: "The dark mode on the website is a nice touch! But more importantly, the Chocolate Lava Cake is divine. I order it every Friday as my weekend treat.",
+  },
+  {
+    id: "t4",
+    name: "David Park",
+    role: "Software Engineer",
+    avatar: "https://i.pravatar.cc/80?img=68",
+    rating: 4,
+    comment: "Great selection, super easy to filter by category and price. The Salmon Nigiri was perfectly fresh. Will definitely keep ordering from here.",
+  },
+  {
+    id: "t5",
+    name: "Amira Hassan",
+    role: "Nurse",
+    avatar: "https://i.pravatar.cc/80?img=45",
+    rating: 5,
+    comment: "After long shifts, FoodHub is my go-to. The Margherita pizza and Mango Smoothie combo never disappoints. Fast, reliable, and always delicious.",
+  },
+]
