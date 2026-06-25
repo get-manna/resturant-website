@@ -3,18 +3,20 @@ import { Outlet, NavLink, useNavigate, Link } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   FiGrid, FiPackage, FiUsers, FiShoppingBag, FiTag, FiBarChart2,
-  FiMenu, FiX, FiLogOut, FiHome, FiSun, FiMoon,
+  FiMenu, FiX, FiLogOut, FiHome, FiSun, FiMoon, FiLayers, FiTruck,
 } from "react-icons/fi"
 import { useAuth } from "@/context/AuthContext.jsx"
 import { useTheme } from "@/context/ThemeContext.jsx"
 
 const NAV = [
-  { to: "/admin",          end: true,  icon: FiGrid,       label: "Overview" },
-  { to: "/admin/products", end: false, icon: FiPackage,    label: "Products" },
-  { to: "/admin/users",    end: false, icon: FiUsers,      label: "Users" },
-  { to: "/admin/orders",   end: false, icon: FiShoppingBag,label: "Orders" },
-  { to: "/admin/coupons",  end: false, icon: FiTag,        label: "Coupons" },
-  { to: "/admin/analytics",end: false, icon: FiBarChart2,  label: "Analytics" },
+  { to: "/admin",             end: true,  icon: FiGrid,        label: "Overview"   },
+  { to: "/admin/products",    end: false, icon: FiPackage,     label: "Products"   },
+  { to: "/admin/categories",  end: false, icon: FiLayers,      label: "Categories" },
+  { to: "/admin/users",       end: false, icon: FiUsers,       label: "Users"      },
+  { to: "/admin/orders",      end: false, icon: FiShoppingBag, label: "Orders"     },
+  { to: "/admin/coupons",     end: false, icon: FiTag,         label: "Coupons"    },
+  { to: "/admin/analytics",   end: false, icon: FiBarChart2,   label: "Analytics"  },
+  { to: "/admin/delivery",    end: false, icon: FiTruck,       label: "Delivery"   },
 ]
 
 export default function AdminDashboard() {

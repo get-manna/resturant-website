@@ -1,18 +1,25 @@
 import { createContext, useContext, useMemo, useCallback, useState } from "react"
 import { useLocalStorage } from "@/hooks/useLocalStorage.js"
 import { INITIAL_COUPONS } from "@/data/coupons.js"
-import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from "@/constants/config.js"
+import { calcDeliveryFee, getDeliverySettings } from "@/utils/deliveryHelpers.js"
+import { useAuth } from "@/context/AuthContext.jsx"
 
 const CartContext = createContext(null)
 
 export function CartProvider({ children }) {
+  const { user } = useAuth()
   const [items, setItems] = useLocalStorage("foodhub_cart", [])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [couponCode, setCouponCode] = useState("")
   const [couponDiscount, setCouponDiscount] = useState(0)
+  const [deliveryDistance, setDeliveryDistance] = useState(() => getDeliverySettings().baseDistance)
+  const [isPickup, setIsPickup] = useState(false)
 
   const subtotal = useMemo(() => items.reduce((s, i) => s + i.price * i.quantity, 0), [items])
-  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE
+  const deliveryFee = useMemo(
+    () => isPickup ? 0 : calcDeliveryFee(deliveryDistance, user),
+    [deliveryDistance, isPickup, user]
+  )
   const total = Math.max(0, subtotal - couponDiscount + deliveryFee)
   const itemCount = items.reduce((s, i) => s + i.quantity, 0)
 
@@ -48,6 +55,8 @@ export function CartProvider({ children }) {
     setItems([])
     setCouponCode("")
     setCouponDiscount(0)
+    setIsPickup(false)
+    setDeliveryDistance(getDeliverySettings().baseDistance)
   }, [setItems])
 
   const toggleCart = useCallback(() => setIsCartOpen(p => !p), [])
@@ -76,7 +85,8 @@ export function CartProvider({ children }) {
   return (
     <CartContext.Provider value={{
       items, itemCount, subtotal, deliveryFee, couponDiscount, couponCode, total,
-      isCartOpen, addItem, removeItem, updateQty, clearCart, toggleCart, applyCoupon, removeCoupon,
+      isCartOpen, deliveryDistance, setDeliveryDistance, setIsPickup,
+      addItem, removeItem, updateQty, clearCart, toggleCart, applyCoupon, removeCoupon,
     }}>
       {children}
     </CartContext.Provider>

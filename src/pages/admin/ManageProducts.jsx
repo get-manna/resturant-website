@@ -8,11 +8,17 @@ import Modal from "@/components/common/Modal.jsx"
 import Button from "@/components/common/Button.jsx"
 import toast from "react-hot-toast"
 
+function getDynamicCategories() {
+  try { return JSON.parse(localStorage.getItem("foodhub_categories") || "null") || CATEGORIES }
+  catch { return CATEGORIES }
+}
+
 export default function ManageProducts() {
   const [products, setProducts] = useState(() => {
     try { return JSON.parse(localStorage.getItem("foodhub_products") || "null") || PRODUCTS }
     catch { return PRODUCTS }
   })
+  const categories = getDynamicCategories()
   const [search, setSearch] = useState("")
   const [catFilter, setCatFilter] = useState("")
   const [deleteId, setDeleteId] = useState(null)
@@ -32,10 +38,22 @@ export default function ManageProducts() {
     saveProducts(products.map(p => p.id === id ? { ...p, isAvailable: !p.isAvailable } : p))
   }
 
+  const matchesCategory = (p) => {
+    if (!catFilter) return true
+    if (p.category === catFilter) return true
+    if (Array.isArray(p.categories) && p.categories.includes(catFilter)) return true
+    return false
+  }
+
   const filtered = products.filter(p =>
     (!search || p.name.toLowerCase().includes(search.toLowerCase())) &&
-    (!catFilter || p.category === catFilter)
+    matchesCategory(p)
   )
+
+  const getCategoryName = (p) => {
+    const catId = p.category
+    return categories.find(c => c.id === catId)?.name || catId
+  }
 
   return (
     <div className="space-y-6">
@@ -56,7 +74,7 @@ export default function ManageProducts() {
         <select value={catFilter} onChange={e => setCatFilter(e.target.value)}
           className="bg-gray-800 border border-dark-border rounded-xl px-3 py-2.5 text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm cursor-pointer">
           <option value="">All Categories</option>
-          {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>
 
@@ -66,7 +84,7 @@ export default function ManageProducts() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-dark-border">
-                {["Product","Category","Price","Stock","Status","Actions"].map(h => (
+                {["Product", "Category", "Price", "Stock", "Status", "Actions"].map(h => (
                   <th key={h} className="text-left text-xs text-gray-400 uppercase tracking-wider px-4 py-3">{h}</th>
                 ))}
               </tr>
@@ -80,7 +98,7 @@ export default function ManageProducts() {
                       <span className="text-sm font-medium text-gray-200 line-clamp-1">{p.name}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-400 capitalize">{p.category}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400 capitalize">{getCategoryName(p)}</td>
                   <td className="px-4 py-3">
                     <div className="text-sm font-bold text-white">{formatPrice(p.discountPrice ?? p.price)}</div>
                     {p.discountPrice && <div className="text-xs text-gray-500 line-through">{formatPrice(p.price)}</div>}

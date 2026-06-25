@@ -18,11 +18,12 @@ const STEPS = [
 ]
 
 export default function Checkout() {
-  const { items, subtotal, deliveryFee, total, couponCode, couponDiscount, updateQty, removeItem, applyCoupon, removeCoupon, clearCart } = useCart()
+  const { items, subtotal, deliveryFee, total, couponCode, couponDiscount, updateQty, removeItem, applyCoupon, removeCoupon, clearCart, deliveryDistance, setDeliveryDistance, setIsPickup } = useCart()
   const { user } = useAuth()
   const { placeOrder } = useOrders()
   const navigate = useNavigate()
   const orderRef = useRef(null)
+  const [localDistance, setLocalDistance] = useState(deliveryDistance)
 
   const [step, setStep] = useState(1)
   const [couponInput, setCouponInput] = useState("")
@@ -200,7 +201,7 @@ export default function Checkout() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Delivery Type</label>
                     <div className="flex gap-3">
                       {["delivery", "pickup"].map(type => (
-                        <button key={type} type="button" onClick={() => setBilling(b => ({ ...b, deliveryType: type }))}
+                        <button key={type} type="button" onClick={() => { setBilling(b => ({ ...b, deliveryType: type })); setIsPickup(type === "pickup") }}
                           className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-semibold capitalize transition-colors ${billing.deliveryType === type ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600" : "border-gray-200 dark:border-dark-border text-gray-600 dark:text-gray-400"}`}>
                           {type === "delivery" ? "🚚 " : "🏪 "}{type}
                         </button>
@@ -224,6 +225,21 @@ export default function Checkout() {
                           {billingErrors[key] && <p className="text-xs text-red-500 mt-1">{billingErrors[key]}</p>}
                         </div>
                       ))}
+                      <div className="sm:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                          Distance from Restaurant (KM)
+                        </label>
+                        <input type="number" step="0.1" min="0.1" value={localDistance}
+                          onChange={e => {
+                            const v = Math.max(0.1, parseFloat(e.target.value) || 0.1)
+                            setLocalDistance(v)
+                            setDeliveryDistance(v)
+                          }}
+                          className="input-field" />
+                        <p className="text-xs text-gray-500 dark:text-dark-muted mt-1">
+                          Estimated delivery fee: <span className="font-semibold text-primary-500">{deliveryFee === 0 ? "FREE" : `$${deliveryFee.toFixed(2)}`}</span>
+                        </p>
+                      </div>
                     </>
                   )}
                 </div>

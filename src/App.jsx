@@ -31,6 +31,8 @@ import ManageOrders from "@/pages/admin/ManageOrders.jsx"
 import Coupons from "@/pages/admin/Coupons.jsx"
 import Analytics from "@/pages/admin/Analytics.jsx"
 import ProductFormPage from "@/pages/admin/ProductFormPage.jsx"
+import ManageCategories from "@/pages/admin/ManageCategories.jsx"
+import DeliverySettings from "@/pages/admin/DeliverySettings.jsx"
 
 const DASHBOARD_PATHS = ["/dashboard", "/admin"]
 const NO_FOOTER_PATHS = ["/checkout"]
@@ -75,6 +77,8 @@ export default function App() {
                 <Route path="products" element={<ManageProducts />} />
                 <Route path="products/new" element={<ProductFormPage mode="create" />} />
                 <Route path="products/:id/edit" element={<ProductFormPage mode="edit" />} />
+                <Route path="categories" element={<ManageCategories />} />
+                <Route path="delivery" element={<DeliverySettings />} />
                 <Route path="users" element={<ManageUsers />} />
                 <Route path="orders" element={<ManageOrders />} />
                 <Route path="coupons" element={<Coupons />} />
